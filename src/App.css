@@ -1,0 +1,65 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+.header {
+    text-align: center;
+}
+
+.footer {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.warpper {
+    padding: 0 20px 50px 20px;
+    margin: 0 auto;
+    max-width: 950px;
+
+    .page-title {
+        padding: 26px 0 20px 0;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .badges {
+        text-align: center;
+        padding-bottom: 20px;
+
+        a {
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 3px;
+        }
+    }
+
+    .title {
+        width: calc(100% - 10px);
+        font-size: 1em;
+        margin-bottom: 1vh;
+        padding: 0.5em 0.25em 0.5em 0.25em;
+    }
+
+    .doc-tools {
+        padding: 1em 0 0 0;
+        font-size: 12px;
+
+        .save-button {
+            float: right;
+        }
+        .save-button + * {
+            clear: both;
+        }
+
+        label {
+            user-select: none;
+
+            input {
+                vertical-align: middle;
+            }
+        }
+    }
+}
