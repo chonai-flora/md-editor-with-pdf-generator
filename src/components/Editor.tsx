@@ -5,19 +5,29 @@ import { jsPDF } from 'jspdf';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import { getCodeString } from 'rehype-rewrite';
+import { useSelector, useDispatch } from 'react-redux';
 import MDEditor, { MDEditorProps } from '@uiw/react-md-editor';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
+import {
+    selectTitle,
+    selectMdText,
+    updateTitle,
+    updateMdText
+} from '../states/state';
+import { store } from '../store/store';
 import PdfPreview from './PdfPreview';
 
 const Editor = () => {
-    const [mdTitle, setTitle] = useState("");
+    const mdTitle = useSelector(selectTitle);
+    const mdText = useSelector(selectMdText);
+    const dispatch = useDispatch();
     const [state, setVisible] = useState<MDEditorProps>({
         visibleDragbar: true,
         hideToolbar: true,
         highlightEnable: true,
         enableScroll: true,
-        value: '',
+        value: mdText,
         preview: 'live',
     });
 
@@ -39,7 +49,7 @@ const Editor = () => {
             const imgData = canvas.toDataURL('image/svg', 5.0);
             const pdf = new jsPDF();
             const width = pdf.internal.pageSize.width;
-            pdf.addImage(imgData, 'SVG', width * 0.05, width * 0.01, width * 0.9, 0);
+            pdf.addImage(imgData, 'SVG', width * 0.1, width * 0.05, width * 0.8, 0);
             pdf.save(filename);
         });
     }
@@ -51,7 +61,7 @@ const Editor = () => {
                 value={mdTitle}
                 className='title'
                 placeholder="タイトル"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(updateTitle(e.target.value))}
             />
             <MDEditor
                 autoFocus
@@ -114,6 +124,7 @@ const Editor = () => {
                 preview={state.preview}
                 onChange={(newValue = '') => {
                     setVisible({ ...state, value: newValue });
+                    dispatch(updateMdText(newValue));
                 }}
             />
 
@@ -122,7 +133,7 @@ const Editor = () => {
                     <input
                         type='checkbox'
                         checked={state.visibleDragbar}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setVisible({ ...state, visibleDragbar: e.target.checked });
                         }}
                     />
@@ -132,7 +143,7 @@ const Editor = () => {
                     <input
                         type='checkbox'
                         checked={state.highlightEnable}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setVisible({ ...state, highlightEnable: e.target.checked });
                         }}
                     />
@@ -142,7 +153,7 @@ const Editor = () => {
                     <input
                         type='checkbox'
                         checked={state.enableScroll}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setVisible({ ...state, enableScroll: e.target.checked });
                         }}
                     />
@@ -152,7 +163,7 @@ const Editor = () => {
                     <input
                         type='checkbox'
                         checked={state.hideToolbar}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setVisible({ ...state, hideToolbar: e.target.checked });
                         }}
                     />
@@ -173,7 +184,7 @@ const Editor = () => {
                         style={{ marginLeft: 10 }}
                         onClick={saveAsPdf}
                     >
-                        PDF形式でエクスポート
+                        PDF形式にエクスポート
                     </button>
                 </div>
             </div>
