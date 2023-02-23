@@ -32,7 +32,7 @@ const App = () => {
     <div>
       <header className='header'>
         <h1>
-          Markdown Editor<br />
+          MD Editor<br />
           with<br />
           PDF Generator
         </h1>
@@ -40,6 +40,7 @@ const App = () => {
           title={meta.title}
           meta={[
             { name: 'description', content: meta.description },
+            { prefix: "og: https://ogp.me/ns#" },
             { property: 'og:title', content: meta.title },
             { property: 'og:type', content: 'website' },
             { property: 'og:url', content: `${meta.url}${meta.name}/` },
