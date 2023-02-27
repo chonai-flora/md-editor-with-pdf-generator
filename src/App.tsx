@@ -1,5 +1,4 @@
 import React from 'react';
-import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -21,13 +20,6 @@ const App = () => {
     }
   };
 
-  const meta = {
-    title: 'MD Editor with PDF Generator',
-    description: 'PDF作成機能を備えたMarkdownエディタです',
-    url: 'https://chonai-flora.github.io/',
-    name: 'md-editor-with-pdf-generator'
-  };
-
   return (
     <div>
       <header className='header'>
@@ -36,20 +28,6 @@ const App = () => {
           with<br />
           PDF Generator
         </h1>
-        <Helmet
-          title={meta.title}
-          meta={[
-            { name: 'description', content: meta.description },
-            { prefix: "og: https://ogp.me/ns#" },
-            { property: 'og:title', content: meta.title },
-            { property: 'og:type', content: 'website' },
-            { property: 'og:url', content: `${meta.url}${meta.name}/` },
-            { property: 'og:image', content: `${meta.url}${meta.name}/ogp.png` },
-            { property: 'og:description', content: meta.description },
-            { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:image', content: `${meta.url}${meta.name}/ogp.png` },
-          ]}
-        />
       </header>
 
       <div className='warpper'>
