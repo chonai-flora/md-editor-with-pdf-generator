@@ -7,7 +7,6 @@ const readme = `作成・編集したMarkdown文書をPDF化することがで�
 数式は
 \`$$c = \\pm\\sqrt{a^2 + b^2}$$\`
 のように一行で表示するか、
-
 \`\`\`KaTeX
 c = \\pm\\sqrt{a^2 + b^2}
 \`\`\`
