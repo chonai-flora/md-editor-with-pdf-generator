@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import 'katex/dist/katex.css';
 import katex from 'katex';
-import { jsPDF } from 'jspdf';
 import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
+import ReactToPrint from 'react-to-print';
 import { getCodeString } from 'rehype-rewrite';
 import { useSelector, useDispatch } from 'react-redux';
 import MDEditor, { MDEditorProps } from '@uiw/react-md-editor';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+
 
 import {
     selectTitle,
@@ -15,10 +15,12 @@ import {
     updateTitle,
     updateMdText
 } from '../states/state';
-import { store } from '../store/store';
 import PdfPreview from './PdfPreview';
+import { store } from '../store/store';
 
 const Editor = () => {
+    const pdfRef = useRef(null);
+
     const mdTitle = useSelector(selectTitle);
     const mdText = useSelector(selectMdText);
     const dispatch = useDispatch();
@@ -37,21 +39,6 @@ const Editor = () => {
         const filename = `${mdTitle || "untitled"}.md`;
         const file = new File([`${state.value}`], filename, { type: 'text/plain;charset=utf-8' });
         saveAs(file);
-    }
-
-    const saveAsPdf = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.preventDefault();
-
-        const target = document.getElementById('pdf');
-        const filename = `${mdTitle || "untitled"}.pdf`;
-
-        html2canvas(target as HTMLElement, { scale: 5.0 }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/svg', 5.0);
-            const pdf = new jsPDF();
-            const width = pdf.internal.pageSize.width;
-            pdf.addImage(imgData, 'SVG', width * 0.1, width * 0.05, width * 0.8, 0);
-            pdf.save(filename);
-        });
     }
 
     return (
@@ -178,22 +165,30 @@ const Editor = () => {
                     >
                         Markdown形式で保存
                     </button>
-                    <button
-                        type='button'
-                        disabled={!state.value}
-                        style={{ marginLeft: 10 }}
-                        onClick={saveAsPdf}
-                    >
-                        PDF形式にエクスポート
-                    </button>
+                    <ReactToPrint
+                        trigger={() => (
+                            <button
+                                type='button'
+                                disabled={!state.value}
+                                style={{ marginLeft: 10 }}
+                            >
+                                PDF形式にエクスポート
+                            </button>
+                        )}
+                        content={() => pdfRef.current}
+                        documentTitle={`${mdTitle || "untitled"}.pdf`}
+                    />
                 </div>
             </div>
-
             <br />
+
             <hr />
             <h3>PDF Preview</h3>
-            <PdfPreview source={state.value!} />
-        </div>
+            <div ref={pdfRef}>
+                {state.value!.split('<br>')
+                    .map((section) => <PdfPreview source={section} />)}
+            </div >
+        </div >
     );
 };
 

@@ -1,49 +1,40 @@
-import { useEffect, useRef } from 'react';
+import 'katex/dist/katex.css';
+import katex from 'katex';
 import rehypeIgnore from 'rehype-ignore';
 import MDEditor from '@uiw/react-md-editor';
-import CodeLayout from 'react-code-preview-layout';
+import { getCodeString } from 'rehype-rewrite';
 import { CodeComponent, ReactMarkdownNames } from 'react-markdown/lib/ast-to-react';
-import { getMetaId, isMeta, getURLParameters } from 'markdown-react-code-preview-loader';
 
-const CodePreview: CodeComponent | ReactMarkdownNames = ({ inline, node, ...props }) => {
-    const $dom = useRef<HTMLDivElement>(null);
-    const { 'data-meta': meta, ...rest } = props as any;
-
-    useEffect(() => {
-        if ($dom.current) {
-            const parentElement = $dom.current.parentElement;
-            if (parentElement && parentElement.parentElement) {
-                parentElement.parentElement.replaceChild($dom.current, parentElement);
-            }
+const CodePreview: CodeComponent | ReactMarkdownNames = ({ inline, children = [], className, ...props }) => {
+    const txt = children[0] || '';
+    if (inline) {
+        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+            const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                throwOnError: false,
+            });
+            return <code dangerouslySetInnerHTML={{ __html: html }} />;
         }
-    }, [$dom]);
-
-    if (inline || !isMeta(meta)) {
-        return <code {...props} />;
+        return <code>{txt}</code>;
     }
-    const line = node.position?.start.line;
-    const metaId = getMetaId(meta) || String(line);
-    if (metaId) {
-        const param = getURLParameters(meta);
-        return (
-            <CodeLayout
-                ref={$dom}
-                style={{ marginBottom: 10 }}
-                toolbar={param.title || 'Example'}
-                code={<pre {...rest} />}
-                text={``}
-            >
-            </CodeLayout>
-        );
+    const code = props.node && props.node.children ? getCodeString(props.node.children) : txt;
+    if (
+        typeof code === 'string' &&
+        typeof className === 'string' &&
+        /^language-katex/.test(className.toLocaleLowerCase())
+    ) {
+        const html = katex.renderToString(code, {
+            throwOnError: false,
+        });
+        return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
     }
-    return <code {...rest} />;
+    return <code className={String(className)}>{txt}</code>;
 };
 
 const PdfPreview = (props: { source: string }) => {
     return (
         <div id='pdf' data-color-mode='light' style={{ marginBottom: '80px' }}>
             <MDEditor.Markdown
-                style={{ paddingTop: 0 }}
+                style={{ margin: '30px', pageBreakAfter: 'always' }}
                 disableCopy={true}
                 rehypePlugins={[rehypeIgnore]}
                 source={props.source || ``}
