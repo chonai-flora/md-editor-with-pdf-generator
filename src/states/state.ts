@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const readme = `
-作成・編集したMarkdown文書をPDF化することができます。  
+const readme = `作成・編集したMarkdown文書をPDF化することができます。  
 
 \`<br>\` タグを挿入することでページを分割できます。
 
